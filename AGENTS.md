@@ -3,7 +3,7 @@
 - Product: Engineering Flight Simulator (EFS), a Discord-first engineering simulation. V1 is Mission 001 — The Double Booking Crisis.
 - Discord is the learner interface; Switch is the agent collaboration layer; MCP exposes backend operations.
 - The standalone Python backend is authoritative for mission facts, session state, decisions, stage progression, challenge results and evaluation.
-- SQLite is the initial persistence layer. Do not add microservices, a frontend or another orchestrator without an explicit scope decision.
+- PostgreSQL is the V1 persistence layer, using SQLAlchemy 2.x, psycopg 3 and Alembic. Do not add microservices, a frontend or another orchestrator without an explicit scope decision.
 - Developer 1 owns Switch/Discord/agent configuration and agent-side MCP integration.
 - Developer 2 owns Python domain logic, persistence, progression, challenge runner, evaluation and backend MCP server.
 - MCP names and schemas are joint contracts; do not change unilaterally.

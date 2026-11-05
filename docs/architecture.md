@@ -1,13 +1,13 @@
 # EFS architecture
 
-Discord is the learner interface. Switch routes and connects the learner-facing Orchestrator and specialists. Agents use MCP to access a standalone Python backend. The backend persists authoritative state in SQLite.
+Discord is the learner interface. Switch routes and connects the learner-facing Orchestrator and specialists. Agents use MCP to access a standalone Python backend. The backend persists authoritative state in PostgreSQL through SQLAlchemy 2.x, psycopg 3 and Alembic.
 
 - **Discord:** conversation surface, not mission state.
 - **Switch:** agent connectivity, shared room context and targeted collaboration.
 - **Agents:** Orchestrator routes/synthesizes; Architect analyses design; Reviewer analyses correctness/failure; Mentor teaches progressively.
 - **MCP adapter:** thin typed boundary calling application services.
 - **Python backend:** sole authority for mission definitions, sessions, decisions, progression, challenge results and evaluation.
-- **SQLite:** initial persistence. Use explicit transactions and database constraints for invariants.
+- **PostgreSQL:** V1 persistence. EFS application objects live in the dedicated `efs` schema; Neon-managed `neon_auth` is never modified.
 
 ## Request flow
 1. Learner messages Discord.

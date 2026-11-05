@@ -1,23 +1,40 @@
+# Python caches and tooling
 __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+.hypothesis/
 .coverage
 htmlcov/
+
+# Virtual environments
 .venv/
 venv/
+
+# Local configuration and secrets
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+
+# Local databases and generated runtime data
 *.sqlite
 *.sqlite3
 *.db
 data/
 logs/
+
+# Build and distribution output
+build/
+dist/
+*.whl
+
+# Editors and operating-system files
 .vscode/
 .idea/
 .DS_Store

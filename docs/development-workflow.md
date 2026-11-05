@@ -20,7 +20,7 @@ python -m efs --check
 1. Agree mission/session/stage identifiers and MCP schemas.
 2. Define domain models and stage enums.
 3. Add Mission 001 structured definition and validation.
-4. Add SQLite schema, transactions and repositories.
+4. Add PostgreSQL schema, transactions and repositories.
 5. Implement session/decision services with tests.
 6. Implement deterministic stage validation/progression.
 7. Define challenge interface and safe runner boundary.

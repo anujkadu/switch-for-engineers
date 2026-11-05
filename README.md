@@ -27,7 +27,7 @@ Learner → Discord → Switch → EFS Orchestrator
                          ├─ Controlled challenge runner
                          └─ Evidence-based evaluation
                                       |
-                                    SQLite
+                                    PostgreSQL
 ```
 
 **Authority boundaries:** Discord is the learner interface; Switch handles agent collaboration; agents provide specialist reasoning; MCP is the typed backend interface; the Python backend is authoritative for mission/session state, decisions, progression, test results and scores. Agents must never invent completion, test results or scores. In-memory tests do not prove database concurrency correctness.
@@ -81,7 +81,7 @@ ruff check .
 python -m efs --check
 ```
 
-The backend is currently a **scaffold**, not a completed simulator. Mission services, SQLite schema, MCP tools, safe challenge runner and evaluation are implementation work still to do. See [backend/README.md](backend/README.md) and [docs/backend-mcp-contract.md](docs/backend-mcp-contract.md).
+The backend is currently a **scaffold**, not a completed simulator. Mission services, PostgreSQL domain schema, MCP tools, safe challenge runner and evaluation are implementation work still to do. See [backend/README.md](backend/README.md) and [docs/backend-mcp-contract.md](docs/backend-mcp-contract.md).
 
 ## Agents and skills
 
