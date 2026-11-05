@@ -1,3 +1,5 @@
+import hashlib
+import json
 import uuid
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -57,22 +59,42 @@ class MissionService:
             raise
 
     def submit_decision(
-        self, session_id: uuid.UUID, learner_id: str, content: Mapping[str, object]
+        self, session_id: uuid.UUID, learner_id: str, content: Mapping[str, object],
+        idempotency_key: str | None = None,
     ) -> MissionDecision:
         self._require_learner(learner_id)
         if not isinstance(content, Mapping) or not content:
             raise InvalidDecisionError("decision content must be a non-empty object")
+        idempotency_key = idempotency_key or str(uuid.uuid4())
+        if not idempotency_key.strip():
+            raise InvalidDecisionError("idempotency_key must be non-empty")
+        request_hash = hashlib.sha256(
+            json.dumps(content, sort_keys=True, separators=(",", ":"), default=str).encode()
+        ).hexdigest()
         with self.sessions.begin() as session:
             item = self._locked_session(session, session_id)
             if item.learner_id != learner_id:
                 raise LearnerMismatchError("decision learner does not own the session")
             if item.status is not SessionStatus.ACTIVE:
                 raise InvalidTransitionError("decisions can only be submitted to active sessions")
+            existing = session.scalar(
+                select(MissionDecision).where(
+                    MissionDecision.session_id == item.id,
+                    MissionDecision.learner_id == learner_id,
+                    MissionDecision.idempotency_key == idempotency_key,
+                )
+            )
+            if existing:
+                if existing.request_hash != request_hash:
+                    raise InvalidDecisionError("idempotency key was reused with different content")
+                return existing
             decision = MissionDecision(
                 session_id=item.id,
                 learner_id=learner_id,
                 stage_id=item.current_stage_id,
                 content=dict(content),
+                idempotency_key=idempotency_key,
+                request_hash=request_hash,
             )
             session.add(decision)
             session.flush()

@@ -12,7 +12,6 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    context.execute("CREATE SCHEMA IF NOT EXISTS efs")
     context.configure(
         url=get_settings().database_url,
         target_metadata=target_metadata,
@@ -22,6 +21,7 @@ def run_migrations_offline() -> None:
         version_table_schema="efs",
         compare_type=True,
     )
+    context.execute("CREATE SCHEMA IF NOT EXISTS efs")
     with context.begin_transaction():
         context.run_migrations()
 

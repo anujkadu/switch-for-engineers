@@ -31,7 +31,20 @@ pytest
 python -m efs --check
 ```
 
-Phase 2 provides code-defined mission definitions, PostgreSQL mission-session/decision/event persistence, and transactional mission lifecycle services. MCP tools, Discord integration, scoring, and the challenge runner remain later-phase work.
+Phase 3A provides a stdio MCP adapter over the mission service. It exposes separate orchestrator and specialist profiles; specialists receive read-only tools.
+
+## MCP server
+
+After installing the package into the active virtual environment:
+
+```bash
+EFS_DATABASE_URL='postgresql+psycopg://...' EFS_MCP_PROFILE=orchestrator efs-mcp
+EFS_DATABASE_URL='postgresql+psycopg://...' EFS_MCP_PROFILE=specialist efs-mcp
+```
+
+Keep credentials in `.env` or the process environment. MCP protocol output is written to stdout; application logging is written to stderr. The orchestrator profile exposes all eight mission tools. The specialist profile exposes only `get_mission`, `get_mission_progress`, and `get_decision_history`.
+
+Use the isolated `EFS_TEST_DATABASE_URL` for integration tests. Never configure automated tests with the production URL.
 
 ## Database configuration
 

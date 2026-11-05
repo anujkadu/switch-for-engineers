@@ -9,6 +9,8 @@ Discord is the learner interface. Switch routes and connects the learner-facing 
 - **Python backend:** sole authority for mission definitions, sessions, decisions, progression, challenge results and evaluation.
 - **PostgreSQL:** V1 persistence. EFS application objects live in the dedicated `efs` schema; Neon-managed `neon_auth` is never modified.
 
+The Phase 3A MCP adapter runs over local stdio using MCP SDK 2.x. It has separate server profiles: the Orchestrator profile registers read and mutation tools, while the Specialist profile registers only read-only tools. The server never exposes SQL, ORM sessions or credentials.
+
 ## Request flow
 1. Learner messages Discord.
 2. Switch routes to Orchestrator.

@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, func, text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -80,7 +80,13 @@ class MissionSession(TimestampMixin, Base):
 
 class MissionDecision(Base):
     __tablename__ = "mission_decisions"
-    __table_args__ = ({"schema": "efs"},)
+    __table_args__ = (
+        UniqueConstraint(
+            "session_id", "learner_id", "idempotency_key",
+            name="uq_efs_decision_idempotency",
+        ),
+        {"schema": "efs"},
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()")
@@ -91,6 +97,8 @@ class MissionDecision(Base):
     learner_id: Mapped[str] = mapped_column(String(255), nullable=False)
     stage_id: Mapped[str] = mapped_column(String(255), nullable=False)
     content: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     submitted_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

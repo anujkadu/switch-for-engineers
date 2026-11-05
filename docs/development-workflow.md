@@ -29,4 +29,15 @@ python -m efs --check
 10. Prove real Switch-agent-to-MCP invocation with one read-only tool.
 11. Add remaining tools and end-to-end tests.
 
+### MCP stdio smoke test
+
+Install the package after changing `pyproject.toml` so the entry point exists:
+
+```bash
+python -m pip install -e .
+EFS_DATABASE_URL='postgresql+psycopg://...' EFS_MCP_PROFILE=specialist efs-mcp
+```
+
+Use an MCP 2.x client to initialize the subprocess and call `tools/list`. Keep stdout reserved for MCP JSON-RPC; inspect stderr for startup diagnostics. A missing `efs-mcp` executable means the editable install is stale. A production database URL must never be used by automated smoke or integration tests.
+
 Use focused branches, update docs when contracts change, run relevant tests, and never commit credentials, database files or private runtime identifiers. This scaffold is not a completed simulator.

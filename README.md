@@ -81,7 +81,7 @@ ruff check .
 python -m efs --check
 ```
 
-The backend is currently a **scaffold**, not a completed simulator. Mission services, PostgreSQL domain schema, MCP tools, safe challenge runner and evaluation are implementation work still to do. See [backend/README.md](backend/README.md) and [docs/backend-mcp-contract.md](docs/backend-mcp-contract.md).
+The backend currently provides the Phase 1/2 PostgreSQL persistence and mission engine plus the Phase 3A stdio MCP adapter. The challenge runner, scoring/evaluation and Discord/Switch end-to-end integration remain future work. See [backend/README.md](backend/README.md) and [docs/backend-mcp-contract.md](docs/backend-mcp-contract.md).
 
 ## Agents and skills
 
