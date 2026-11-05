@@ -12,4 +12,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DROP SCHEMA IF EXISTS efs")
+    # The schema may predate this migration or contain objects from later
+    # migrations. Never drop the shared EFS schema during a single revision's
+    # downgrade; schema lifecycle is managed separately from revision rollback.
+    pass
