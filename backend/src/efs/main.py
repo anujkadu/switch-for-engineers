@@ -1,4 +1,5 @@
 """Backend application entry point."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,6 +15,7 @@ def main() -> None:
         print("EFS backend package import OK; server implementation is pending.")
         return
     raise SystemExit("Backend scaffold only: MCP server is not implemented. See backend/README.md.")
+
 
 if __name__ == "__main__":
     main()

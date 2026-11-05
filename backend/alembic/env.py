@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from efs.config import get_settings
 from efs.db import Base
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 config = context.config
 if config.config_file_name:
@@ -12,6 +12,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
+    context.execute("CREATE SCHEMA IF NOT EXISTS efs")
     context.configure(
         url=get_settings().database_url,
         target_metadata=target_metadata,
@@ -30,6 +31,8 @@ def run_migrations_online() -> None:
     configuration["sqlalchemy.url"] = get_settings().database_url
     connectable = engine_from_config(configuration, prefix="sqlalchemy.", poolclass=pool.NullPool)
     with connectable.connect() as connection:
+        connection.execute(text("CREATE SCHEMA IF NOT EXISTS efs"))
+        connection.commit()
         context.configure(
             connection=connection,
             target_metadata=target_metadata,

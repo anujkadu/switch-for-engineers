@@ -1,4 +1,5 @@
 """Create the isolated EFS schema."""
+
 from alembic import op
 
 revision = "0001_create_efs_schema"

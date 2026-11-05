@@ -31,7 +31,7 @@ pytest
 python -m efs --check
 ```
 
-Phase 1 provides PostgreSQL settings, SQLAlchemy sessions, and an Alembic migration that creates only the isolated `efs` schema. Domain workflows, MCP tools and the challenge runner are not implemented yet.
+Phase 2 provides code-defined mission definitions, PostgreSQL mission-session/decision/event persistence, and transactional mission lifecycle services. MCP tools, Discord integration, scoring, and the challenge runner remain later-phase work.
 
 ## Database configuration
 
@@ -46,6 +46,8 @@ EFS_DATABASE_URL='postgresql+psycopg://...' alembic -c backend/alembic.ini upgra
 The initial migration creates `efs` and `efs.alembic_version` only. It must be explicitly reviewed before applying to Neon production. Do not use `Base.metadata.create_all()` for production schema management.
 
 Run tests and lint from the repository root with `pytest` and `ruff check .`. Integration tests must use a separate PostgreSQL test database and must never target production.
+
+The mission engine uses exact mission ID/version lookup, append-only decisions, explicit stage progression rules, row locking for progression, and one active session per learner/mission/version. Set `EFS_TEST_DATABASE_URL` before running PostgreSQL integration tests; tests skip clearly when it is absent.
 
 ## Safety
 Never expose arbitrary shell execution through MCP. Before accepting untrusted submissions, the challenge runner needs a fixed test contract and explicit resource/time limits.
