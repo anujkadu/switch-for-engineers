@@ -1,0 +1,5 @@
+# Openings MCP. Start the server locally first:
+#   openings-mcp --http=127.0.0.1:8080
+# No authentication is required in the EFS setup.
+[mcp_servers.openings]
+url = "http://127.0.0.1:8080"
