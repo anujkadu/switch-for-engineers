@@ -1,267 +1,708 @@
 # EFS — Engineering Foundational Suite
 
-### Your AI-powered engineering growth companion
+**Beyond coding assistants. An entire AI engineering team.**
 
-EFS (Engineering Foundational Suite) is a coordinated multi-agent system designed to help developers learn, build, contribute to real-world software projects, and explore career opportunities.
+EFS (Engineering Foundational Suite) is a multi-agent AI platform designed to support developers throughout their engineering journey — from learning and building software to architecture reviews, critical feedback, and career discovery.
 
-Rather than relying on one general-purpose AI assistant, EFS brings together specialised agents with distinct responsibilities, coordinated through a central Orchestrator.
+Built using **Switch and Codex-powered agents**, EFS brings together five specialized AI agents that collaborate through a central orchestrator. Developers can interact with the team through Discord instead of managing separate AI conversations.
 
-> **EFS doesn't just help you write better code. It helps you become a better engineer.**
+---
+
+## Table of Contents
+
+- [The Problem](#the-problem)
+- [Our Solution](#our-solution)
+- [Meet the AI Engineering Team](#meet-the-ai-engineering-team)
+- [Architecture](#architecture)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+- [Configuring the Agents](#configuring-the-agents)
+- [Setting Up MCP Integrations](#setting-up-mcp-integrations)
+- [Connecting Discord](#connecting-discord)
+- [Running EFS](#running-efs)
+- [Testing the Workflow](#testing-the-workflow)
+- [Troubleshooting](#troubleshooting)
+- [Security](#security)
+- [Project Structure](#project-structure)
+- [Future Scope](#future-scope)
+- [Contributing](#contributing)
 
 ---
 
 ## The Problem
 
-Software engineers often rely on disconnected tools and resources throughout their development journey.
+Software engineering involves much more than writing code.
 
-- **Learning:** Understanding unfamiliar technologies requires searching through scattered documentation and tutorials.
-- **Building:** Making architectural decisions and evaluating technical trade-offs can be difficult without experienced guidance.
-- **Code quality:** Developers need independent reviews that challenge assumptions and identify potential problems.
-- **Open-source contributions:** Finding suitable issues and understanding unfamiliar repositories can be overwhelming.
-- **Career growth:** Discovering relevant opportunities and identifying skill gaps requires continuous research.
+Developers regularly need to:
 
-These activities are connected, but developers often approach them independently.
+- Understand unfamiliar technologies and concepts.
+- Make system architecture and design decisions.
+- Review implementations and identify weaknesses.
+- Get constructive feedback on technical approaches.
+- Discover relevant job and career opportunities.
 
-## The Solution
+These activities often require different tools, workflows, and sources of information. A single general-purpose AI assistant may help with many of them, but coordinating specialized expertise remains a challenge.
 
-EFS brings these capabilities together through a coordinated multi-agent system.
+We wanted to bring these capabilities together in one collaborative system.
 
-A central **EFS Orchestrator** acts as the developer's primary point of contact. It understands incoming requests, determines which specialists are relevant, coordinates their work, and synthesises their responses.
+## Our Solution
 
-### What EFS provides
+EFS is built around a simple idea:
 
-| Capability | What it helps with |
+**Instead of one AI assistant trying to do everything, let specialized AI agents work together as an engineering team.**
+
+The platform consists of five specialized agents coordinated by the EFS Orchestrator.
+
+A developer sends a request through Discord. The Orchestrator understands the request, identifies the relevant specialists, delegates tasks, gathers their responses through Switch, and presents a consolidated answer.
+
+Not every request requires every agent. The Orchestrator involves specialists according to the task.
+
+## Meet the AI Engineering Team
+
+| Agent | Responsibility |
 |---|---|
-| Engineering mentorship | Understand concepts and implement solutions incrementally |
-| Architecture guidance | Evaluate designs, system boundaries, and technical trade-offs |
-| Critical reviews | Challenge assumptions and identify risks |
-| GitHub assistance | Explore repositories, issues, and pull requests |
-| Job discovery | Find opportunities and assess skill requirements |
-| Documentation assistance | Retrieve relevant technical documentation |
+| EFS Orchestrator | Understands requests, delegates work, coordinates agents, and synthesizes responses. |
+| Engineering Mentor | Explains technical concepts and guides developers through implementation challenges. |
+| Senior Architect | Helps with system design, architecture decisions, and technical trade-offs. |
+| Critical Reviewer | Independently challenges assumptions and identifies potential weaknesses. |
+| Job Search | Discovers relevant career opportunities using Openings MCP. |
+
+### 1. EFS Orchestrator
+
+The central coordinator and developer's primary point of contact.
+
+It classifies incoming requests, determines which specialists are relevant, delegates work, gathers their findings, and delivers a consolidated response.
+
+### 2. Engineering Mentor
+
+Provides technical mentorship, explains unfamiliar concepts, and helps developers understand implementation decisions.
+
+### 3. Senior Architect
+
+Assists with architectural planning, system design, technology choices, and engineering trade-offs.
+
+### 4. Critical Reviewer
+
+Provides independent technical feedback, questions assumptions, and identifies potential problems in proposed solutions.
+
+### 5. Job Search
+
+Helps developers discover relevant job opportunities through the Openings MCP integration.
 
 ---
 
 ## Architecture
 
-EFS uses [Switch](https://github.com/sandbox-quantum/switch) as its agent collaboration and communication layer.
-
-The Orchestrator coordinates specialist agents through a dedicated internal collaboration room. MCP integrations provide access to external tools and information.
+EFS uses Switch as its core multi-agent collaboration and messaging infrastructure.
 
 ```mermaid
 flowchart TD
-    U["Developer"] --> C["Discord / Other Messaging Channel"]
-    C --> O["EFS Orchestrator"]
+    D[Developer]
+    DC[Discord]
+    O[EFS Orchestrator]
 
-    O <--> R["efs-agent-convo"]
+    D --> DC
+    DC --> O
 
-    R <--> M["Engineering Mentor"]
-    R <--> A["Senior Architect"]
-    R <--> CR["Critical Reviewer"]
-    R <--> J["Job Search Agent"]
+    O <--> R[efs-info-exchange]
 
-    O --> GH["GitHub MCP"]
-    O --> C7["Context7 MCP"]
-    J --> OM["Openings MCP"]
+    R <--> M[Engineering Mentor]
+    R <--> A[Senior Architect]
+    R <--> C[Critical Reviewer]
+    R <--> J[Job Search]
+
+    O <--> G[GitHub MCP]
+    O <--> CT[Context7 MCP]
+    J <--> OP[Openings MCP]
+
+    O --> DC
+    DC --> D
 ```
 
-### Agents
+### How the workflow operates
 
-| Agent | Responsibility |
-|---|---|
-| `efs-orchestrator` | Primary interface and central coordinator |
-| `engineering-mentor` | Technical mentorship and implementation guidance |
-| `senior-architect-test` | Architecture, system design, and trade-off analysis |
-| `critical-reviewer` | Independent review and identification of weaknesses |
-| `job-search` | Job discovery and career-related guidance |
+1. A developer sends a request through Discord.
+2. The EFS Orchestrator interprets the request.
+3. The Orchestrator identifies which specialist agents are needed.
+4. It delegates relevant tasks to those agents.
+5. Agents communicate through the shared Switch room `efs-info-exchange`.
+6. The Orchestrator gathers the actual responses.
+7. A consolidated response is delivered to the developer.
 
-The internal collaboration room is named `efs-agent-convo`.
-
-For more details, see [Architecture](docs/architecture.md) and [Agent and Skill Model](docs/agent-and-skill-model.md).
+The Orchestrator remains the primary point of contact throughout the interaction.
 
 ---
 
-## Getting Started
+## Technology Stack
 
-### Prerequisites
+| Technology | Purpose |
+|---|---|
+| Switch | Multi-agent orchestration and collaboration infrastructure. |
+| Codex | Agent runtime powering our implementation. |
+| Discord | Developer-facing communication interface. |
+| Model Context Protocol (MCP) | Connects agents to external tools and information. |
+| GitHub MCP | GitHub-related engineering workflows. |
+| Context7 MCP | Technical documentation access. |
+| Openings MCP | Job discovery capabilities. |
 
-- [Switch Console](https://docs.switchagents.ai/)
-- A configured Switch server
-- A supported agent provider (the reference EFS setup uses Codex)
-- Git and GitHub access
-- Docker, if required by your MCP deployment
-- Discord or another supported messaging platform
+### Important resources
 
-### 1. Set up Switch
+- [Switch GitHub Repository](https://github.com/sandbox-quantum/switch)
+- [Switch Documentation](https://docs.switchagents.ai/)
+- [Codex Documentation](https://developers.openai.com/codex/)
+- [Codex MCP Documentation](https://developers.openai.com/codex/mcp/)
+- [GitHub MCP Server](https://github.com/github/github-mcp-server)
+- [Context7 Documentation](https://context7.com/docs/installation)
+- [Openings MCP](https://github.com/amikai/openings-mcp)
 
-Install and configure Switch by following its [official documentation](https://docs.switchagents.ai/).
+---
 
-Repository: https://github.com/sandbox-quantum/switch
+# Getting Started
 
-Switch provides the infrastructure for registering agents, configuring their execution environments, organising rooms, and connecting messaging platforms.
+This section describes how to reproduce the EFS reference setup.
 
-### 2. Configure the EFS agents
+**Important:** EFS is a Switch-based multi-agent configuration, not a standalone application that becomes operational simply by running a Python script. Cloning this repository gives you its project documentation and any configuration or source files included in the checkout. Switch, Codex, agent configuration, MCP connectivity, and Discord integration must also be set up.
 
-Create the five agents listed above in Switch.
+## Prerequisites
+
+Before beginning, make sure you have:
+
+- Git installed.
+- A GitHub account.
+- Switch installed and accessible.
+- Codex configured as the agent provider.
+- Access to a Discord server where you can add a bot.
+- Network connectivity for the required MCP integrations.
+- Python 3 installed only if you are working with Python-based components included in the repository.
+
+### Step 1: Clone the repository
+
+```bash
+git clone <YOUR_EFS_REPOSITORY_URL>
+```
+
+Move into the project directory:
+
+```bash
+cd EFS
+```
+
+Replace the repository URL and directory name with the actual values for your GitHub repository.
+
+### Step 2: Prepare the local development environment
+
+If the repository contains Python components with a `requirements.txt` file, create a virtual environment:
+
+**Linux/macOS:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**Windows PowerShell:**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+If the repository uses another dependency manager or does not contain Python dependencies, follow the relevant project manifest instead. Do not install unrelated dependencies simply to configure Switch.
+
+### Step 3: Install and prepare Switch
+
+Install Switch by following its official installation documentation:
+
+[Switch Documentation](https://docs.switchagents.ai/)
+
+Once installed:
+
+1. Start or open your Switch environment.
+2. Verify that the local Switch server is accessible.
+3. Confirm that your environment supports the required Codex agent provider.
+4. Familiarize yourself with agent configuration and room management.
+
+Use the installation instructions for your operating system and Switch version. Avoid relying on commands from older documentation.
+
+### Step 4: Configure Codex
+
+EFS uses Codex-powered agents.
+
+Follow the official documentation to install and authenticate Codex:
+
+[Codex Documentation](https://developers.openai.com/codex/)
+
+Verify that Codex is available to the environment in which Switch launches agent sessions.
+
+**Important:** A successful Codex login in your normal terminal does not automatically prove that every isolated Switch agent session can access the same authentication. Verify the provider connection from the actual Switch agent runtime.
+
+For MCP configuration guidance, refer to:
+
+[Codex MCP Configuration](https://developers.openai.com/codex/mcp/)
+
+---
+
+# Configuring the Agents
+
+EFS requires five specialized agents.
+
+Create and configure the following agents in your Switch environment.
+
+| Agent | Configured agent ID |
+|---|---|
+| EFS Orchestrator | `efs-orchestrator` |
+| Engineering Mentor | `engineering-mentor` |
+| Senior Architect | `senior-architect-test` |
+| Critical Reviewer | `critical-reviewer` |
+| Job Search | `job-search` |
+
+The Senior Architect agent uses the configured ID `senior-architect-test` in the current reference implementation.
+
+### Agent configuration checklist
 
 For each agent:
 
-1. Configure its name and description.
-2. Select the appropriate provider and execution environment.
-3. Add its corresponding agent instructions.
-4. Configure the required MCP integrations.
-5. Assign it to the appropriate room.
+1. Create the agent in Switch.
+2. Select Codex as its provider.
+3. Configure its agent-specific instructions.
+4. Verify its identity and responsibilities.
+5. Configure the required MCP integrations, if applicable.
+6. Save the configuration.
+7. Start a test session and verify that the agent responds.
 
-The agent instructions define responsibilities, boundaries, expected behaviour, and collaboration rules.
+Each agent should have a clearly defined responsibility. Avoid giving every agent the same instructions.
 
-Refer to [AGENTS.md](AGENTS.md) for the project-level agent guidance.
+### Recommended responsibility boundaries
 
-### 3. Configure the rooms
+- The Orchestrator coordinates and synthesizes; it should not unnecessarily delegate every request.
+- The Engineering Mentor focuses on teaching and implementation guidance.
+- The Senior Architect focuses on architecture and technical trade-offs.
+- The Critical Reviewer provides independent analysis rather than simply agreeing with other agents.
+- The Job Search agent focuses on career and job discovery.
 
-EFS uses two types of rooms:
+---
 
-- **Developer-facing room:** The developer communicates with the EFS Orchestrator here.
-- **Internal collaboration room:** Create `efs-agent-convo` and add the Orchestrator and relevant specialist agents.
+## Setting Up Agent Collaboration
 
-The Orchestrator uses the internal room for specialist handoffs and coordination.
+The agents need a shared communication space.
 
-### 4. Configure MCP integrations
+Create the following room in Switch:
 
-EFS uses three external MCP integrations.
+```text
+efs-info-exchange
+```
 
-| Integration | Configured for | Purpose | Credentials |
-|---|---|---|---|
-| GitHub MCP | EFS Orchestrator | GitHub repository, issue, and PR workflows | `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable |
-| Context7 MCP | EFS Orchestrator | Technical documentation retrieval | `CONTEXT7_API_KEY` environment variable |
-| Openings MCP | Job Search Agent | Job discovery | Not required in the EFS setup |
+Use this as the internal collaboration room for EFS.
 
-**GitHub MCP**
+Add the relevant specialist agents and ensure the Orchestrator can communicate with them.
 
-Repository: https://github.com/github/github-mcp-server
+### Verify collaboration
 
-GitHub MCP is referenced in the Orchestrator's `.toml` configuration. The configuration does not contain a token; it reads the bearer token from the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable via `bearer_token_env_var`. Set that variable in the agent session environment. Never commit tokens or secrets.
+Before connecting Discord, test agent communication inside Switch.
 
-**Context7 MCP**
+Confirm that:
 
-Documentation: https://context7.com/docs/installation
+- The Orchestrator can identify the appropriate specialist.
+- The Orchestrator can initiate communication.
+- The specialist can receive and respond to requests.
+- The Orchestrator can retrieve the specialist's response.
+- The final response reflects the actual findings returned by the specialist.
+
+A functioning individual agent does not necessarily mean the complete multi-agent workflow is working. Test the communication path separately.
+
+---
+
+# Setting Up MCP Integrations
+
+EFS uses MCP servers to extend agent capabilities.
+
+MCP configuration is maintained in the relevant agent runtime configuration rather than assuming that every server is globally available to all agents.
+
+### MCP responsibility mapping
+
+| MCP integration | Assigned agent | Purpose |
+|---|---|---|
+| GitHub MCP | EFS Orchestrator | GitHub-related engineering workflows. |
+| Context7 MCP | EFS Orchestrator | Access to technical documentation. |
+| Openings MCP | Job Search | Discover job opportunities. |
+
+### 1. GitHub MCP
+
+Repository:
+
+https://github.com/github/github-mcp-server
+
+Configure GitHub MCP in the Orchestrator's agent `.toml` configuration.
+
+The GitHub credentials required by the server must be made available to the agent session through its runtime environment.
+
+Do not hardcode tokens in agent instructions, committed configuration files, or the README.
+
+Follow the official GitHub MCP repository documentation for installation, authentication, and available tools.
+
+### 2. Context7 MCP
+
+Documentation:
+
+https://context7.com/docs/installation
 
 MCP endpoint:
 
-`https://mcp.context7.com/mcp`
+```text
+https://mcp.context7.com/mcp
+```
 
-Context7 is configured in the Orchestrator's MCP configuration. It reads its bearer token from the `CONTEXT7_API_KEY` environment variable via `bearer_token_env_var`; no key is stored in the repository.
+Configure Context7 in the Orchestrator's agent `.toml` configuration.
 
-**Openings MCP**
+Refer to the official Context7 documentation for the current client configuration and authentication requirements.
 
-Repository: https://github.com/amikai/openings-mcp
+### 3. Openings MCP
 
-Openings MCP is configured in the Job Search Agent's `.toml` configuration. It does not require credentials in the EFS setup.
+Repository:
 
-Ensure the server is reachable from the Job Search Agent's execution environment.
+https://github.com/amikai/openings-mcp
 
-See [MCP Integrations](docs/architecture.md#5-mcp-integrations) for the integration responsibilities.
+Configure Openings MCP in the Job Search agent's `.toml` configuration.
 
-### 5. Connect Discord
+In the current EFS setup, Openings MCP does not require credentials.
 
-Discord is the reference communication platform for the EFS demonstration.
+Follow the repository's instructions for installing and running the server, and ensure that it is reachable from the Job Search agent's runtime.
 
-Follow the official Switch guide:
+### MCP verification checklist
 
-**[Connect Discord — Switch Documentation](https://docs.switchagents.ai/switch-rooms/deploy/messaging-apps/discord)**
+After configuring each MCP server:
 
-After connecting Discord:
+- Verify that the server can start or connect successfully.
+- Confirm that it is available to the intended agent.
+- Verify that the expected tools are discoverable.
+- Run a representative tool call.
+- Inspect the returned result.
+- Check agent runtime logs if initialization fails.
 
-1. Make the intended Discord channel available as a Switch room.
-2. Add the EFS Orchestrator to the developer-facing room.
-3. Verify the channel-to-room mapping.
-4. Send a test message and confirm the Orchestrator responds.
-
-Other supported messaging platforms can be configured using the [Switch documentation](https://docs.switchagents.ai/).
-
-### 6. Start using EFS
-
-Once the agents, rooms, MCP integrations, and messaging platform are configured, start a conversation with the Orchestrator.
-
-Example prompts:
-
-**Engineering mentorship**
-
-> Explain how dependency injection works in Spring Boot and help me implement it in a small example.
-
-**Architecture guidance**
-
-> Review this proposed architecture and identify potential scalability and maintainability concerns.
-
-**Critical review**
-
-> Challenge this implementation approach. Identify assumptions, edge cases, and possible failure points.
-
-**GitHub assistance**
-
-> Help me explore this repository and identify issues suitable for a beginner-friendly contribution.
-
-**Job discovery**
-
-> Find backend engineering opportunities that match my current skills and identify the technologies I should improve.
-
-The Orchestrator determines which specialists and tools are relevant, coordinates the work, and presents a consolidated response.
+**Note:** MCP configuration and availability depend on the agent runtime. A server configured on your host machine is not automatically guaranteed to be accessible inside an isolated agent session.
 
 ---
 
-## Example Workflows
+# Connecting Discord
 
-### Engineering mentorship
+Discord is the primary developer-facing interface for EFS.
 
-1. Developer asks a technical question.
-2. Orchestrator identifies the learning requirement.
-3. Engineering Mentor provides an explanation and practical guidance.
-4. Orchestrator presents the response.
+It allows developers to communicate with the Orchestrator without directly managing individual agent sessions.
 
-### Architecture and critical review
+### Discord integration setup
 
-1. Developer shares a design or implementation approach.
-2. Orchestrator delegates architecture analysis to the Senior Architect.
-3. Critical Reviewer independently evaluates the proposal.
-4. Orchestrator consolidates findings, trade-offs, and recommendations.
+Follow the official Switch Discord integration guide:
 
-### Open-source contribution discovery
+[Switch — Discord Messaging Integration](https://docs.switchagents.ai/switch-rooms/deploy/messaging-apps/discord)
 
-1. Developer asks for help finding a suitable contribution.
-2. Orchestrator uses GitHub MCP to inspect relevant repository information.
-3. Specialists assist with technical understanding and review where appropriate.
-4. Orchestrator presents grounded findings and possible next steps.
+Use the official guide for:
 
-### Career discovery
+- Creating and configuring your Discord application and bot.
+- Setting up the required bot permissions and intents.
+- Connecting Discord to your Switch environment.
+- Configuring the messaging integration.
+- Verifying that messages reach the intended agent.
 
-1. Developer describes their skills and career interests.
-2. Orchestrator delegates the request to the Job Search Agent.
-3. Job Search Agent uses Openings MCP to discover relevant opportunities.
-4. The response highlights matching opportunities and relevant skill gaps.
+Do not expose your Discord bot token or other credentials in the repository.
+
+### Verify the connection
+
+Once configured:
+
+1. Confirm that the Discord integration is connected.
+2. Ensure the Orchestrator is accessible through the intended Discord channel.
+3. Send a simple test message.
+4. Confirm that the Orchestrator receives and responds to it.
+5. Test a request that requires a specialist agent.
+
+At this point, you should be able to interact with EFS through Discord.
 
 ---
 
-## Project Documentation
+# Running EFS
 
-| Document | Purpose |
+Before testing the complete workflow, verify that all required components are available.
+
+### Pre-launch checklist
+
+- [ ] Switch is running.
+- [ ] Codex authentication works inside the agent runtime.
+- [ ] All five agents are configured.
+- [ ] Each agent has the correct instructions.
+- [ ] The `efs-info-exchange` room exists.
+- [ ] The Orchestrator can communicate with specialist agents.
+- [ ] GitHub MCP is accessible to the Orchestrator.
+- [ ] Context7 MCP is accessible to the Orchestrator.
+- [ ] Openings MCP is accessible to the Job Search agent.
+- [ ] Discord is connected.
+- [ ] No required credentials are missing from the relevant sessions.
+
+Once these checks pass, EFS is ready for end-to-end testing.
+
+---
+
+# Testing the Workflow
+
+The following prompts can be used to validate the different parts of EFS.
+
+### Test 1: Orchestrator smoke test
+
+Send through Discord:
+
+```text
+Give me a brief introduction to EFS and explain
+which specialist agents are available.
+```
+
+Expected result:
+
+The Orchestrator should introduce the system and explain the responsibilities of its agents.
+
+### Test 2: Engineering Mentor
+
+```text
+Explain how dependency injection works in Spring Boot.
+Give me a practical example and explain why it is useful.
+```
+
+Expected result:
+
+The Engineering Mentor should provide a clear technical explanation and implementation guidance.
+
+### Test 3: Senior Architect
+
+```text
+I am planning a scalable task management application.
+Help me think through its architecture, major components,
+database choices, and important trade-offs.
+```
+
+Expected result:
+
+The Orchestrator should involve the Senior Architect and return architecture-focused guidance.
+
+### Test 4: Critical Reviewer
+
+```text
+Review this proposed architecture:
+A single backend service handles authentication,
+user management, notifications, and reporting.
+Identify potential weaknesses and suggest improvements.
+```
+
+Expected result:
+
+The Critical Reviewer should independently challenge the design and identify trade-offs.
+
+### Test 5: Job Search
+
+```text
+Find relevant software engineering opportunities
+for an early-career developer. Include available
+application details and source links.
+```
+
+Expected result:
+
+The Job Search agent should use its configured Openings MCP integration and provide grounded results.
+
+### Test 6: Multi-agent collaboration
+
+```text
+I want to build a production-ready REST API.
+Help me plan the architecture, identify implementation
+considerations, and critically review the proposed approach.
+```
+
+Expected result:
+
+The Orchestrator should identify the relevant specialists, coordinate their work, gather actual responses, and synthesize their findings.
+
+**Testing principle:** Verify that agents actually communicate and use their configured tools. A convincing final response alone does not prove that delegation or MCP execution occurred.
+
+---
+
+# Troubleshooting
+
+### 1. An agent does not respond
+
+Check:
+
+- Whether the agent session started successfully.
+- Whether Codex is available inside that session.
+- Whether the agent's configuration is valid.
+- Whether the agent runtime logs contain errors.
+
+### 2. Agent-to-agent communication fails
+
+Check:
+
+- Whether `efs-info-exchange` exists.
+- Whether the relevant agents have access to the room.
+- Whether the Orchestrator is invoking the messaging tool correctly.
+- Whether the recipient agent is available.
+
+During development, we encountered cases where `switch.post_message` did not behave consistently. If delegation fails, inspect the tool execution and agent logs rather than assuming the specialist completed the task.
+
+### 3. An MCP server is unavailable
+
+Check:
+
+- Whether the MCP configuration is in the correct agent's `.toml` file.
+- Whether the server endpoint or command is correct.
+- Whether the server process is running, when applicable.
+- Whether the agent runtime can reach the server.
+- Whether required credentials are available in the agent session.
+
+### 4. Discord messages do not reach the Orchestrator
+
+Check:
+
+- Bot configuration.
+- Required Discord permissions and intents.
+- Switch messaging integration status.
+- Channel configuration.
+- Relevant Switch logs.
+
+Refer to the [official Discord integration guide](https://docs.switchagents.ai/switch-rooms/deploy/messaging-apps/discord) for integration-specific troubleshooting.
+
+---
+
+# Security
+
+EFS integrates with external services and messaging platforms. Keep credentials protected.
+
+Follow these practices:
+
+- Never commit API tokens, bot tokens, or private credentials.
+- Use the agent runtime's supported credential and environment configuration.
+- Avoid storing secrets in agent instructions.
+- Keep local configuration and secret files out of version control.
+- Review permissions granted to GitHub and Discord integrations.
+- Give agents only the access required for their responsibilities.
+- Verify tool behavior before using integrations for sensitive operations.
+
+If you add environment-specific configuration files, ensure they are excluded through `.gitignore`.
+
+---
+
+# Project Structure
+
+The documentation is organized as follows:
+
+```text
+EFS/
+├── README.md
+├── AGENTS.md
+└── docs/
+    ├── architecture.md
+    ├── agent-and-skill-model.md
+    └── development-workflow.md
+```
+
+| File | Purpose |
 |---|---|
-| [AGENTS.md](AGENTS.md) | Project-level instructions and agent behaviour guidelines |
-| [Architecture](docs/architecture.md) | System components, communication, and integrations |
-| [Agent and Skill Model](docs/agent-and-skill-model.md) | Specialist responsibilities and reusable capabilities |
-| [Development Workflow](docs/development-workflow.md) | Contribution, testing, and documentation practices |
+| `README.md` | Project introduction, architecture, setup, and usage. |
+| `AGENTS.md` | Instructions for coding agents working on the repository. |
+| `docs/architecture.md` | System architecture and component responsibilities. |
+| `docs/agent-and-skill-model.md` | Agent roles, skills, and collaboration model. |
+| `docs/development-workflow.md` | Development, validation, and contribution workflow. |
 
-## Scope and Limitations
+---
 
-EFS is an agent-coordination and engineering-assistance system. Its capabilities depend on configured agents, tools, providers, and external integrations.
+# Development and Validation
 
-- EFS does not currently depend on a custom backend or database for mission tracking.
-- It does not claim persistent learner progression, scoring, or evaluation history.
-- Job discovery depends on external job-source availability and behaviour.
-- GitHub operations are subject to the permissions granted to the connected account.
-- Agents should not claim to have inspected repositories, issues, or pull requests unless they have actually retrieved the relevant information.
+When modifying EFS:
 
-## Project Vision
+1. Understand the existing agent responsibilities before changing instructions.
+2. Avoid duplicating responsibilities across agents.
+3. Preserve the Orchestrator's coordination role.
+4. Verify agent communication after changing collaboration configuration.
+5. Test affected MCP integrations.
+6. Validate Discord interaction after messaging changes.
+7. Review changes before committing.
 
-EFS aims to make high-quality engineering guidance more accessible by combining specialised AI agents into one coordinated experience.
+### Tests and linting
 
-From understanding a new technology to evaluating architecture, contributing to open source, and discovering career opportunities, EFS brings different parts of an engineer's growth journey into one place.
+If the repository includes automated tests and linting, use the commands defined by its dependency and project configuration.
 
-**From building software to building your career.**
+Replace the following with the actual verified commands for this repository:
+
+```bash
+# Run tests
+<VERIFIED_TEST_COMMAND>
+
+# Run linting
+<VERIFIED_LINT_COMMAND>
+```
+
+Do not treat these placeholders as executable commands.
+
+---
+
+# Future Scope
+
+EFS is designed as an extensible multi-agent engineering platform.
+
+Potential areas for future development include:
+
+- Improving agent-to-agent communication reliability.
+- Making tool execution and agent activity more transparent.
+- Expanding engineering workflows and specialist capabilities.
+- Improving orchestration and error handling.
+- Adding further integrations that provide practical value to developers.
+
+These are future directions, not claims about currently implemented functionality.
+
+---
+
+# Contributing
+
+Contributions and feedback are welcome.
+
+If you want to improve EFS:
+
+1. Explore the existing architecture and agent responsibilities.
+2. Identify a specific improvement or issue.
+3. Keep changes focused and consistent with the project's design.
+4. Test the affected agent workflows and integrations.
+5. Update relevant documentation.
+6. Submit a pull request with a clear explanation of the changes.
+
+---
+
+# A Final Word
+
+We believe AI should do more than help developers write code.
+
+It should help them understand, design, question, improve, and grow.
+
+EFS is our attempt to bring that experience together through a team of specialized AI agents that collaborate instead of working in isolation.
+
+**One interface. Five specialists. One collaborative AI engineering team.**
+
+Built for the Switch Hackathon.
+
+**Project:** EFS — Engineering Foundational Suite
+
+**Powered by:** Switch, Codex, MCP, and Discord
+
+**Video Demo:** https://youtu.be/b5EsV57YSOc
+
+**GitHub Repository:** [ADD YOUR REPOSITORY LINK]
+
+---
+
+## Acknowledgements
+
+- [Switch](https://github.com/sandbox-quantum/switch) — Multi-agent collaboration infrastructure.
+- [OpenAI Codex](https://developers.openai.com/codex/) — Agent runtime.
+- [GitHub MCP Server](https://github.com/github/github-mcp-server) — GitHub integration.
+- [Context7](https://context7.com/) — Technical documentation integration.
+- [Openings MCP](https://github.com/amikai/openings-mcp) — Job discovery integration.
