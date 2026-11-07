@@ -178,7 +178,7 @@ Before beginning, make sure you have:
 ### Step 1: Clone the repository
 
 ```bash
-git clone <YOUR_EFS_REPOSITORY_URL>
+git clone https://github.com/anujkadu/switch-for-engineers
 ```
 
 Move into the project directory:
@@ -691,11 +691,9 @@ Built for the Switch Hackathon.
 
 **Project:** EFS — Engineering Foundational Suite
 
-**Powered by:** Switch, Codex, MCP, and Discord
-
 **Video Demo:** https://youtu.be/b5EsV57YSOc
 
-**GitHub Repository:** [ADD YOUR REPOSITORY LINK]
+**GitHub Repository:** [[ADD YOUR REPOSITORY LINK]](https://github.com/anujkadu/switch-for-engineers)
 
 ---
 
